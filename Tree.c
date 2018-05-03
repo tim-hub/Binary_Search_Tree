@@ -30,7 +30,7 @@ BSTHead* CreateBST(){
 }
 
 void AddNodeRecursively(Node* root, int data){
-  if (root -> data >= data){
+  if (data>= root->data){
     if (root -> right == NULL){
       Node* pNew = (Node *) malloc(sizeof(Node));
       pNew -> data = data;
@@ -38,6 +38,7 @@ void AddNodeRecursively(Node* root, int data){
       pNew -> right = NULL;
 
       root -> right = pNew;
+
     }else {
       AddNodeRecursively(root -> right, data);
     }
@@ -56,7 +57,6 @@ void AddNodeRecursively(Node* root, int data){
 }
 
 void AddNode(BSTHead* myBST, int data){
-
   if(myBST-> root ==NULL){
 
     Node* pNew = (Node *) malloc(sizeof(Node));
@@ -71,14 +71,32 @@ void AddNode(BSTHead* myBST, int data){
     // root =myBST -> root;
     AddNodeRecursively(myBST -> root, data);
   }
+}
 
+void PrintTreeInOrder(Node* root){
+  if (root != NULL){
+    PrintTreeInOrder(root -> left);
+    printf ("%d ", root->data);
+    PrintTreeInOrder(root -> right);
+  }
+  // if we print it inorder way
+  // then the output should be in order
+  // if the output is in order, then the program works well
 }
 
 int main(){
   BSTHead* myBST = CreateBST();
 
   AddNode(myBST, 7);
+  AddNode(myBST, 10);
+  AddNode(myBST, 1);
   AddNode(myBST, 7);
+  AddNode(myBST, 127);
+  AddNode(myBST, -023);
+  AddNode(myBST, 1);
+  AddNode(myBST, -7);
+  PrintTreeInOrder(myBST -> root);
+
 
   // system("pause");
   return 0;

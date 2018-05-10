@@ -191,6 +191,25 @@ void CountNodes(Node* root, int* p_count){
   }
 }
 
+int GetHeight(Node* root)
+{
+   if (root==NULL)
+       return 0;
+   else
+   {
+
+       int l = GetHeight(root->left);
+       int r = GetHeight(root->right);
+
+
+       if (l > r) {
+         return(l+1);
+       }else{
+         return(r+1);
+       }
+   }
+}
+
 int Search(Node * node, int data){
   if (node != NULL){
     if (node -> data == data){
@@ -334,6 +353,10 @@ int main(){
     node =GetSmallestNodeParentRecursively(root);
     printf("smalles data %d", node -> left->data);
   }
+
+  // get tree height
+  int h=GetHeight(myBST -> root);
+  printf("tree height: %d \n", h);
 
   //empty tree
   EmptyTree(myBST);

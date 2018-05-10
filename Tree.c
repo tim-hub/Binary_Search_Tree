@@ -72,16 +72,212 @@ void AddNode(BSTHead* myBST, int data){
   }
 }
 
-void PrintTreeInOrder(Node* root){
+void TraversalInOrder(Node* root){
   if (root != NULL){
-    PrintTreeInOrder(root -> left);
-    printf ("%d ", root->data);
-    PrintTreeInOrder(root -> right);
+    TraversalInOrder(root -> left);
+    printf ("%d, ", root->data);
+    TraversalInOrder(root -> right);
   }
   // if we print it inorder way
   // then the output should be in order
   // if the output is in order, then the program works well
 }
+
+
+
+void EmptyTreeFromRoot(Node *root){
+  if (root!=NULL){
+    EmptyTreeFromRoot(root->left);
+    EmptyTreeFromRoot(root->right);
+  }else{
+    free(root);
+  }
+}
+void EmptyTree(BSTHead *myBST){
+  EmptyTreeFromRoot(myBST->root);
+  free(myBST);
+}
+
+
+
+Node * GetSmallestNodeParentRecursively(Node *root){
+  Node * node = (Node *) malloc(sizeof(Node));
+
+  if (root->left-> left == NULL){
+    node = root;
+  }else{
+    node = GetSmallestNodeParentRecursively(root -> left);
+  }
+  return node;
+}
+
+Node * GetLargestNodeParentRecursively(Node *root){
+  Node * node = (Node *) malloc(sizeof(Node));
+
+  if (root->right-> right == NULL){
+    node = root;
+  }else{
+    node = GetLargestNodeParentRecursively(root -> right);
+  }
+  return node;
+}
+// Node * GetSmallestNodeParent(Node *root){
+//   if (root == NULL){
+//     printf("cannot search, root is null");
+//     return NULL;
+//   }else if (root -> left ==NULL){
+//     printf("the root is smallest");
+//     return NULL;
+//   }else if(root->left->left ==NULL){
+//     return root;
+//   }else{
+//     return GetSmallestNodeParentRecursively(root);
+//   }
+// }
+
+int GetSmallestRecursively(Node *root){
+  int rv=0;
+  if (root->left != NULL){
+    rv =GetSmallestRecursively(root -> left);
+  }else{
+    rv= root -> data;
+  }
+  return rv;
+}
+
+int GetLargestRecursively(Node *root){
+  int rv=0;
+
+  if (root->right != NULL){
+    rv =GetLargestRecursively(root -> right);
+  }else{
+    rv= root -> data;
+  }
+    return rv;
+
+
+}
+
+int GetSmallest(Node *root){
+  int rv=0;
+  if (root != NULL){
+    rv = GetSmallestRecursively(root);
+  }else{
+    printf("no root");
+    rv =-1;
+  }
+  return rv;
+}
+int GetLargest(Node *root){
+  int rv=0;
+  if (root != NULL){
+    rv = GetLargestRecursively(root);
+  }else{
+    printf("no root");
+    rv =-1;
+  }
+  return rv;
+}
+
+void CountNodes(Node* root, int* p_count){
+
+  if (root !=NULL){
+
+    CountNodes(root -> left, p_count);
+
+    CountNodes(root -> right, p_count);
+    ++*p_count;
+    // printf("%d ", *p_count);
+  }
+}
+
+int Search(Node * node, int data){
+  if (node != NULL){
+    if (node -> data == data){
+      return 1;
+    }else{
+      if (node -> data > data){
+        Search(node -> left, data);
+      }else{
+        Search(node -> right, data);
+      }
+      return 0;
+    }
+  }else{
+    return 0;
+  }
+}
+
+
+Node * SearchNode(Node *node, int data){
+  if (node -> data == data){
+    return node;
+  }else{
+    if (node -> data > data){
+      Search(node -> left, data);
+    }else{
+      Search(node -> right, data);
+    }
+  }
+  return NULL;
+}
+
+int Delete(Node *root, int data){
+  if (root != NULL){
+    if (root -> data == data){
+
+      Node * node = (Node *) malloc(sizeof(Node));
+
+      if (root -> left == NULL && root -> right == NULL){
+        printf("cannot search in left sub tree \n");
+        printf("cannot search in right sub tree");
+
+        // delete the only node
+        root = NULL;
+        return 1;
+
+      }else{
+        if (root -> left != NULL) {
+
+        }else{
+          printf("the root is smallest");
+          node= NULL;
+          printf("smalles data %d", root ->data);
+        }
+      }
+
+
+
+      // else if (root -> left ==NULL){
+
+      // }else if(root->left->left ==NULL){
+      //   node = root;
+      //   printf("smalles data %d", node->left ->data);
+      // }
+      // else
+      // {
+      //   node =GetSmallestNodeParentRecursively(root);
+      //   printf("smalles data %d", node -> left->data);
+      // }
+
+
+
+    //   return 1;
+
+    // }else{
+    //   if (node -> data > data){
+    //     Search(node -> left, data);
+    //   }else{
+    //     Search(node -> right, data);
+    //   }
+    //   return 0;
+    }
+  }else{
+    return 0;
+  }
+}
+
+
 
 int main(){
   BSTHead* myBST = CreateBST();
@@ -94,7 +290,55 @@ int main(){
   AddNode(myBST, -023);
   AddNode(myBST, 1);
   AddNode(myBST, -7);
-  PrintTreeInOrder(myBST -> root);
+
+  printf("show the tree: \n");
+  TraversalInOrder(myBST -> root);
+
+// searching test
+  printf("\nsearching 7 and 99: ");
+  int s = Search(myBST -> root, 7);
+  printf ("%d ", s);
+
+  s = Search(myBST -> root, 99);
+  printf ("%d \n", s);
+
+// counting test
+  printf("count of tree: ");
+  int count;
+  CountNodes(myBST -> root, &count) ;
+  printf("%d \n", count);
+
+// finding smallest and largest data
+  int Smallest = GetSmallest(myBST-> root);
+  printf("left most %d \n", Smallest);
+
+  int Largest = GetLargest(myBST-> root);
+  printf("right most %d \n", Largest);
+
+// finding smallest largest node
+  Node * node = (Node *) malloc(sizeof(Node));
+  Node * root = myBST -> root;
+  if (root == NULL){
+    printf("cannot search, root is null");
+    node=  NULL;
+  }else if (root -> left ==NULL){
+    printf("the root is smallest");
+    node= NULL;
+    printf("smalles data %d", root ->data);
+  }else if(root->left->left ==NULL){
+    node = root;
+    printf("smalles data %d", node->left ->data);
+  }
+  else
+  {
+    node =GetSmallestNodeParentRecursively(root);
+    printf("smalles data %d", node -> left->data);
+  }
+
+  //empty tree
+  EmptyTree(myBST);
+  // testing after empty the tree
+  printf(myBST->root -> data);
 
 
   // system("pause");

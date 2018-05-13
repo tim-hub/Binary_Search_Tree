@@ -10,7 +10,7 @@ Author: Tim
 #include <stdlib.h>
 
 typedef struct node{
-  unsigned long     data;
+  signed long     data;
   struct node* left;
   struct node* right;
 }Node;
@@ -28,7 +28,7 @@ BSTHead* CreateBST(){
   return myTree;
 }
 
-void AddNodeRecursively(Node* root, unsigned long data){
+void AddNodeRecursively(Node* root, signed long data){
   if (data>= root->data){
     if (root -> right == NULL){
       Node* pNew = (Node *) malloc(sizeof(Node));
@@ -55,7 +55,7 @@ void AddNodeRecursively(Node* root, unsigned long data){
   }
 }
 
-void AddNode(BSTHead* myBST, unsigned long data){
+void AddNode(BSTHead* myBST, signed long data){
   if(myBST-> root ==NULL){
 
     Node* pNew = (Node *) malloc(sizeof(Node));
@@ -78,12 +78,12 @@ void TraversalInOrder(Node* root){
     printf ("%lu, ", root->data);
     TraversalInOrder(root -> right);
   }
-  // if we prunsigned long it inorder way
+  // if we prsigned long it inorder way
   // then the output should be in order
   // if the output is in order, then the program works well
 }
 
-void CountNodes(Node* root, unsigned long* p_count){
+void CountNodes(Node* root, signed long* p_count){
 
   if (root !=NULL){
 
@@ -95,15 +95,15 @@ void CountNodes(Node* root, unsigned long* p_count){
   }
 }
 
-unsigned long GetHeight(Node* root)
+signed long GetHeight(Node* root)
 {
    if (root==NULL)
        return 0;
    else
    {
 
-       unsigned long l = GetHeight(root->left);
-       unsigned long r = GetHeight(root->right);
+       signed long l = GetHeight(root->left);
+       signed long r = GetHeight(root->right);
 
 
        if (l > r) {
@@ -114,7 +114,7 @@ unsigned long GetHeight(Node* root)
    }
 }
 
-Node * SearchNodeRecursively(Node *node, unsigned long data){
+Node * SearchNodeRecursively(Node *node, signed long data){
   if (node -> data == data){
     return node;
   }else{
@@ -125,7 +125,7 @@ Node * SearchNodeRecursively(Node *node, unsigned long data){
     }
   }
 }
-Node * SearchNode(Node *node, unsigned long data){
+Node * SearchNode(Node *node, signed long data){
   if (node == NULL){
     printf("Error, root is empty");
     return NULL;
@@ -135,7 +135,7 @@ Node * SearchNode(Node *node, unsigned long data){
 }
 
 
-Node * SearchNodeParentRecursively(Node *node, unsigned long data){
+Node * SearchNodeParentRecursively(Node *node, signed long data){
   if (node -> left-> data == data || node -> right -> data == data ){
     return node;
   }
@@ -148,7 +148,7 @@ Node * SearchNodeParentRecursively(Node *node, unsigned long data){
   }
 }
 
-Node * SearchNodeParent(Node *node, unsigned long data){
+Node * SearchNodeParent(Node *node, signed long data){
   if (node == NULL){
     printf("Error, root is empty");
     return NULL;
@@ -157,7 +157,7 @@ Node * SearchNodeParent(Node *node, unsigned long data){
   }
 }
 
-unsigned long Search(Node * node, unsigned long data){
+signed long Search(Node * node, signed long data){
   if (SearchNode(node, data) != NULL){
     return 1;
   }else{
@@ -261,8 +261,8 @@ Node * GetRightestNode(Node *root){
 
 }
 
-unsigned long GetSmallest(Node *root){
-  unsigned long rv=0;
+signed long GetSmallest(Node *root){
+  signed long rv=0;
   if (root != NULL){
     rv = GetLeftestNode(root) -> data;
   }else{
@@ -271,8 +271,8 @@ unsigned long GetSmallest(Node *root){
   }
   return rv;
 }
-unsigned long GetLargest(Node *root){
-  unsigned long rv=0;
+signed long GetLargest(Node *root){
+  signed long rv=0;
   if (root != NULL){
     rv = GetRightestNode(root) -> data;
   }else{
@@ -351,7 +351,7 @@ int main(){
 
 // searching test
   printf("\nsearching 111 and 127: \n");
-  unsigned long s = Search(myBST -> root, 127);
+  signed long s = Search(myBST -> root, 127);
   printf ("result of finding 11: (1 means exist) %lu \n", s);
 
   s = Search(myBST -> root, 127);
@@ -359,12 +359,12 @@ int main(){
 
 // counting test
   printf("count of tree: ");
-  unsigned long count;
+  signed long count;
   CountNodes(myBST -> root, &count) ;
   printf("%lu \n", count);
 
 // get tree height
-  unsigned long h=GetHeight(myBST -> root);
+  signed long h=GetHeight(myBST -> root);
   printf("tree height: %lu \n", h);
 
 // test to find a node
@@ -374,10 +374,10 @@ int main(){
   }
 
 // finding Leftest and Rightest data, they are using the same way to find the node
-  unsigned long Leftest = GetSmallest(myBST-> root);
+  signed long Leftest = GetSmallest(myBST-> root);
   printf("left most %lu \n", Leftest);
 
-  unsigned long Rightest = GetLargest(myBST-> root);
+  signed long Rightest = GetLargest(myBST-> root);
   printf("right most %lu \n", Rightest);
 
 
@@ -397,7 +397,7 @@ int main(){
   //empty tree
   EmptyTree(myBST);
   // testing after empty the tree
-  printf("\nafter empty the data on root is %lu \n", myBST->root -> data);
+  printf("\n empty the tree \n");
 
   // Delete tree
   printf("after deleting the tree: \n");

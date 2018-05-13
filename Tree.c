@@ -10,7 +10,7 @@ Author: Tim
 #include <stdlib.h>
 
 typedef struct node{
-  int     data;
+  unsigned long     data;
   struct node* left;
   struct node* right;
 }Node;
@@ -28,7 +28,7 @@ BSTHead* CreateBST(){
   return myTree;
 }
 
-void AddNodeRecursively(Node* root, int data){
+void AddNodeRecursively(Node* root, unsigned long data){
   if (data>= root->data){
     if (root -> right == NULL){
       Node* pNew = (Node *) malloc(sizeof(Node));
@@ -55,7 +55,7 @@ void AddNodeRecursively(Node* root, int data){
   }
 }
 
-void AddNode(BSTHead* myBST, int data){
+void AddNode(BSTHead* myBST, unsigned long data){
   if(myBST-> root ==NULL){
 
     Node* pNew = (Node *) malloc(sizeof(Node));
@@ -75,27 +75,107 @@ void AddNode(BSTHead* myBST, int data){
 void TraversalInOrder(Node* root){
   if (root != NULL){
     TraversalInOrder(root -> left);
-    printf ("%d, ", root->data);
+    printf ("%lu, ", root->data);
     TraversalInOrder(root -> right);
   }
-  // if we print it inorder way
+  // if we prunsigned long it inorder way
   // then the output should be in order
   // if the output is in order, then the program works well
 }
 
+void CountNodes(Node* root, unsigned long* p_count){
 
+  if (root !=NULL){
+
+    CountNodes(root -> left, p_count);
+
+    CountNodes(root -> right, p_count);
+    ++*p_count;
+    // printf("%lu ", *p_count);
+  }
+}
+
+unsigned long GetHeight(Node* root)
+{
+   if (root==NULL)
+       return 0;
+   else
+   {
+
+       unsigned long l = GetHeight(root->left);
+       unsigned long r = GetHeight(root->right);
+
+
+       if (l > r) {
+         return(l+1);
+       }else{
+         return(r+1);
+       }
+   }
+}
+
+Node * SearchNodeRecursively(Node *node, unsigned long data){
+  if (node -> data == data){
+    return node;
+  }else{
+    if (node -> data > data){
+      return SearchNodeRecursively(node -> left, data);
+    }else{
+      return SearchNodeRecursively(node -> right, data);
+    }
+  }
+}
+Node * SearchNode(Node *node, unsigned long data){
+  if (node == NULL){
+    printf("Error, root is empty");
+    return NULL;
+  }else{
+    return SearchNodeRecursively(node, data);
+  }
+}
+
+unsigned long Search(Node * node, unsigned long data){
+  if (SearchNode(node, data) != NULL){
+    return 1;
+  }else{
+    return 0;
+  }
+}
+
+void DeleteTreeFromRoot(Node *root){
+  if (root!=NULL){
+    DeleteTreeFromRoot(root->left);
+    DeleteTreeFromRoot(root->right);
+    free (root);
+
+    if (root -> left != NULL){
+      root -> left = NULL;
+    }
+    if (root -> right != NULL){
+      root -> right = NULL;
+    }
+
+    root = NULL;
+
+
+  }
+}
+void DeleteTree(BSTHead *myBST){
+  DeleteTreeFromRoot(myBST->root);
+
+  free(myBST);
+  myBST = NULL;
+}
 
 void EmptyTreeFromRoot(Node *root){
   if (root!=NULL){
     EmptyTreeFromRoot(root->left);
     EmptyTreeFromRoot(root->right);
-  }else{
-    free(root);
+    root -> data =0;
   }
 }
 void EmptyTree(BSTHead *myBST){
   EmptyTreeFromRoot(myBST->root);
-  free(myBST);
 }
 
 
@@ -121,22 +201,10 @@ Node * GetLargestNodeParentRecursively(Node *root){
   }
   return node;
 }
-// Node * GetSmallestNodeParent(Node *root){
-//   if (root == NULL){
-//     printf("cannot search, root is null");
-//     return NULL;
-//   }else if (root -> left ==NULL){
-//     printf("the root is smallest");
-//     return NULL;
-//   }else if(root->left->left ==NULL){
-//     return root;
-//   }else{
-//     return GetSmallestNodeParentRecursively(root);
-//   }
-// }
 
-int GetSmallestRecursively(Node *root){
-  int rv=0;
+
+unsigned long GetSmallestRecursively(Node *root){
+  unsigned long rv=0;
   if (root->left != NULL){
     rv =GetSmallestRecursively(root -> left);
   }else{
@@ -145,8 +213,8 @@ int GetSmallestRecursively(Node *root){
   return rv;
 }
 
-int GetLargestRecursively(Node *root){
-  int rv=0;
+unsigned long GetLargestRecursively(Node *root){
+  unsigned long rv=0;
 
   if (root->right != NULL){
     rv =GetLargestRecursively(root -> right);
@@ -158,8 +226,8 @@ int GetLargestRecursively(Node *root){
 
 }
 
-int GetSmallest(Node *root){
-  int rv=0;
+unsigned long GetSmallest(Node *root){
+  unsigned long rv=0;
   if (root != NULL){
     rv = GetSmallestRecursively(root);
   }else{
@@ -168,8 +236,8 @@ int GetSmallest(Node *root){
   }
   return rv;
 }
-int GetLargest(Node *root){
-  int rv=0;
+unsigned long GetLargest(Node *root){
+  unsigned long rv=0;
   if (root != NULL){
     rv = GetLargestRecursively(root);
   }else{
@@ -179,121 +247,43 @@ int GetLargest(Node *root){
   return rv;
 }
 
-void CountNodes(Node* root, int* p_count){
 
-  if (root !=NULL){
 
-    CountNodes(root -> left, p_count);
+unsigned long Delete(Node *root, unsigned long data){
+  /*
+  * The idea to safely delete a node on a binary search tree
+  * Find the node, nodeD
+  * Find the largest node on left side of node
+  * If null node on left, find right smallest node, it is nodeAlter
+  * Set data of this node is the data from nodeD we found on last step
+  * connect nodeD"s child to nodeD"s parent
+  */
+  Node * nodeD = (Node *) malloc(sizeof(Node));
+  Node * nodeAlter = (Node *) malloc(sizeof(Node));
+  Node * nodeAlter_Parent = (Node *) malloc(sizeof(Node));
 
-    CountNodes(root -> right, p_count);
-    ++*p_count;
-    // printf("%d ", *p_count);
+  if (root != NULL){
+    printf("Error, please do not give me an empty tree\n");
+    return 0;
   }
-}
-
-int GetHeight(Node* root)
-{
-   if (root==NULL)
-       return 0;
-   else
-   {
-
-       int l = GetHeight(root->left);
-       int r = GetHeight(root->right);
-
-
-       if (l > r) {
-         return(l+1);
-       }else{
-         return(r+1);
-       }
-   }
-}
-
-int Search(Node * node, int data){
-  if (node != NULL){
-    if (node -> data == data){
-      return 1;
-    }else{
-      if (node -> data > data){
-        Search(node -> left, data);
-      }else{
-        Search(node -> right, data);
-      }
+  else{
+    // find the first node whose data equals to data
+    nodeD = SearchNode(root, data);
+    if (nodeD == NULL){
+      printf("Error, we cannot find data %lu \n", data);
       return 0;
     }
-  }else{
-    return 0;
+
+    // find left largest of nodeD
+
+
+
+
+
   }
-}
 
+  return 0;
 
-Node * SearchNode(Node *node, int data){
-  if (node -> data == data){
-    return node;
-  }else{
-    if (node -> data > data){
-      Search(node -> left, data);
-    }else{
-      Search(node -> right, data);
-    }
-  }
-  return NULL;
-}
-
-int Delete(Node *root, int data){
-  if (root != NULL){
-    if (root -> data == data){
-
-      Node * node = (Node *) malloc(sizeof(Node));
-
-      if (root -> left == NULL && root -> right == NULL){
-        printf("cannot search in left sub tree \n");
-        printf("cannot search in right sub tree");
-
-        // delete the only node
-        root = NULL;
-        return 1;
-
-      }else{
-        if (root -> left != NULL) {
-
-        }else{
-          printf("the root is smallest");
-          node= NULL;
-          printf("smalles data %d", root ->data);
-        }
-      }
-
-
-
-      // else if (root -> left ==NULL){
-
-      // }else if(root->left->left ==NULL){
-      //   node = root;
-      //   printf("smalles data %d", node->left ->data);
-      // }
-      // else
-      // {
-      //   node =GetSmallestNodeParentRecursively(root);
-      //   printf("smalles data %d", node -> left->data);
-      // }
-
-
-
-    //   return 1;
-
-    // }else{
-    //   if (node -> data > data){
-    //     Search(node -> left, data);
-    //   }else{
-    //     Search(node -> right, data);
-    //   }
-    //   return 0;
-    }
-  }else{
-    return 0;
-  }
 }
 
 
@@ -301,38 +291,45 @@ int Delete(Node *root, int data){
 int main(){
   BSTHead* myBST = CreateBST();
 
-  AddNode(myBST, 7);
-  AddNode(myBST, 10);
-  AddNode(myBST, 1);
-  AddNode(myBST, 7);
+  AddNode(myBST, 17);
+  AddNode(myBST, 20);
+  AddNode(myBST, 11);
+  AddNode(myBST, 17);
   AddNode(myBST, 127);
-  AddNode(myBST, -023);
   AddNode(myBST, 1);
-  AddNode(myBST, -7);
+  AddNode(myBST, 11);
+  AddNode(myBST, 9);
 
   printf("show the tree: \n");
   TraversalInOrder(myBST -> root);
 
 // searching test
-  printf("\nsearching 7 and 99: ");
-  int s = Search(myBST -> root, 7);
-  printf ("%d ", s);
+  printf("\nsearching 111 and 127: \n");
+  unsigned long s = Search(myBST -> root, 127);
+  printf ("result of finding 11 %lu \n", s);
 
-  s = Search(myBST -> root, 99);
-  printf ("%d \n", s);
+  s = Search(myBST -> root, 127);
+  printf ("result of finding 127 %lu \n", s);
 
 // counting test
   printf("count of tree: ");
-  int count;
+  unsigned long count;
   CountNodes(myBST -> root, &count) ;
-  printf("%d \n", count);
+  printf("%lu \n", count);
+
+// get tree height
+  unsigned long h=GetHeight(myBST -> root);
+  printf("tree height: %lu \n", h);
+
+// test to find a node
+  printf("looking for %lu and it exsists \n", SearchNode(myBST -> root, 7)-> data);
 
 // finding smallest and largest data
-  int Smallest = GetSmallest(myBST-> root);
-  printf("left most %d \n", Smallest);
+  unsigned long Smallest = GetSmallest(myBST-> root);
+  printf("left most %lu \n", Smallest);
 
-  int Largest = GetLargest(myBST-> root);
-  printf("right most %d \n", Largest);
+  unsigned long Largest = GetLargest(myBST-> root);
+  printf("right most %lu \n", Largest);
 
 // finding smallest largest node
   Node * node = (Node *) malloc(sizeof(Node));
@@ -343,26 +340,36 @@ int main(){
   }else if (root -> left ==NULL){
     printf("the root is smallest");
     node= NULL;
-    printf("smalles data %d", root ->data);
+    printf("smalles data %lu", root ->data);
   }else if(root->left->left ==NULL){
     node = root;
-    printf("smalles data %d", node->left ->data);
+    printf("smalles data %lu", node->left ->data);
   }
   else
   {
     node =GetSmallestNodeParentRecursively(root);
-    printf("smalles data %d", node -> left->data);
+    printf("smalles data %lu \n", node -> left->data);
   }
 
-  // get tree height
-  int h=GetHeight(myBST -> root);
-  printf("tree height: %d \n", h);
+
+
+
+
+
+
 
   //empty tree
   EmptyTree(myBST);
   // testing after empty the tree
-  printf(myBST->root -> data);
+  printf("after empty the data on root is %lu \n", myBST->root -> data);
 
+  // Delete tree
+  printf("after deleting the tree: \n");
+  DeleteTree(myBST);
+  // testing after deleting the tree
+  h=GetHeight(myBST -> root);
+  printf("tree height: %lu \n", h);
+  printf("after delete %lu \n", myBST -> root -> left -> data);
 
   // system("pause");
   return 0;

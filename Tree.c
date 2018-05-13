@@ -134,6 +134,29 @@ Node * SearchNode(Node *node, unsigned long data){
   }
 }
 
+
+Node * SearchNodeParentRecursively(Node *node, unsigned long data){
+  if (node -> left-> data == data || node -> right -> data == data ){
+    return node;
+  }
+  else{
+    if (node -> data > data){
+      return SearchNodeParentRecursively(node -> left, data);
+    }else{
+      return SearchNodeParentRecursively(node -> right, data);
+    }
+  }
+}
+
+Node * SearchNodeParent(Node *node, unsigned long data){
+  if (node == NULL){
+    printf("Error, root is empty");
+    return NULL;
+  }else{
+    return SearchNodeParentRecursively(node, data);
+  }
+}
+
 unsigned long Search(Node * node, unsigned long data){
   if (SearchNode(node, data) != NULL){
     return 1;
@@ -179,82 +202,141 @@ void EmptyTree(BSTHead *myBST){
 }
 
 
-
-Node * GetSmallestNodeParentRecursively(Node *root){
+Node * GetLeftestNodeParentRecursively(Node *root){
   Node * node = (Node *) malloc(sizeof(Node));
-
+  node = NULL;
   if (root->left-> left == NULL){
     node = root;
   }else{
-    node = GetSmallestNodeParentRecursively(root -> left);
+    node = GetLeftestNodeParentRecursively(root -> left);
   }
   return node;
 }
 
-Node * GetLargestNodeParentRecursively(Node *root){
-  Node * node = (Node *) malloc(sizeof(Node));
+Node * GetLeftestNodeParent(Node *root){
+  if (root == NULL){
+    printf("Error, root is empty");
+    return NULL;
+  }else{
+    return GetLeftestNodeParentRecursively(root);
+  }
+}
 
+Node * GetRightestNodeParentRecursively(Node *root){
+  Node * node = (Node *) malloc(sizeof(Node));
+  node = NULL;
   if (root->right-> right == NULL){
     node = root;
   }else{
-    node = GetLargestNodeParentRecursively(root -> right);
+    node = GetRightestNodeParentRecursively(root -> right);
   }
   return node;
 }
 
-
-unsigned long GetSmallestRecursively(Node *root){
-  unsigned long rv=0;
-  if (root->left != NULL){
-    rv =GetSmallestRecursively(root -> left);
+Node * GetRightestNodeParent(Node *root){
+  if (root == NULL){
+    printf("Error, root is empty");
+    return NULL;
   }else{
-    rv= root -> data;
+    return GetRightestNodeParentRecursively(root);
   }
-  return rv;
 }
 
-unsigned long GetLargestRecursively(Node *root){
-  unsigned long rv=0;
 
-  if (root->right != NULL){
-    rv =GetLargestRecursively(root -> right);
-  }else{
-    rv= root -> data;
+Node * GetLeftestNode(Node *root){
+  if (root == NULL && root ->left != NULL){
+    printf ("Error, root is empty");
+    return NULL;
   }
-    return rv;
 
+  return GetLeftestNodeParent(root)->left;
+
+}
+Node * GetRightestNode(Node *root){
+  if (root == NULL && root ->right != NULL){
+    printf ("Error, root is empty");
+    return NULL;
+  }
+  return GetRightestNodeParent(root)->right;
 
 }
 
 unsigned long GetSmallest(Node *root){
   unsigned long rv=0;
   if (root != NULL){
-    rv = GetSmallestRecursively(root);
+    rv = GetLeftestNode(root) -> data;
   }else{
-    printf("no root");
-    rv =-1;
+    printf("Error, no root\n");
+    rv =-1; //will be a very big number
   }
   return rv;
 }
 unsigned long GetLargest(Node *root){
   unsigned long rv=0;
   if (root != NULL){
-    rv = GetLargestRecursively(root);
+    rv = GetRightestNode(root) -> data;
   }else{
-    printf("no root");
-    rv =-1;
+    printf("Error, no root\n");
+    rv =-1; //will be a very big number
+
   }
   return rv;
 }
 
+/* Given a binary search tree and a data, this function deletes the data
+   and returns the new root */
+Node* deleteNode(Node* root, int data)
+{
+    // base case
+    if (root == NULL) return root;
 
+    // If the data to be deleted is smaller than the root's data,
+    // then it lies in left subtree
+    if (data < root->data)
+        root->left = deleteNode(root->left, data);
+
+    // If the data to be deleted is greater than the root's data,
+    // then it lies in right subtree
+    else if (data > root->data)
+        root->right = deleteNode(root->right, data);
+
+    // if data is same as root's data, then This is the node
+    // to be deleted
+    else
+    {
+        // node with only one child or no child
+        if (root->left == NULL)
+        {
+            Node *temp = root->right;
+            free(root);
+            return temp;
+        }
+        else if (root->right == NULL)
+        {
+            Node *temp = root->left;
+            free(root);
+            return temp;
+        }
+
+        // node with two children: Get the inorder successor (smallest
+        // in the right subtree)
+        Node* temp = GetLeftestNode(root->right);
+
+        // Copy the inorder successor's content to this node
+        root->data = temp->data;
+
+        // Delete the inorder successor
+        root->right = deleteNode(root->right, temp->data);
+    }
+    return root;
+}
 
 unsigned long Delete(Node *root, unsigned long data){
   /*
   * The idea to safely delete a node on a binary search tree
   * Find the node, nodeD
-  * Find the largest node on left side of node
-  * If null node on left, find right smallest node, it is nodeAlter
+  * Find the Rightest node on left side of node
+  * If null node on left, find right Leftest node, it is nodeAlter
   * Set data of this node is the data from nodeD we found on last step
   * connect nodeD"s child to nodeD"s parent
   */
@@ -262,24 +344,81 @@ unsigned long Delete(Node *root, unsigned long data){
   Node * nodeAlter = (Node *) malloc(sizeof(Node));
   Node * nodeAlter_Parent = (Node *) malloc(sizeof(Node));
 
-  if (root != NULL){
+  if (root == NULL){
     printf("Error, please do not give me an empty tree\n");
     return 0;
   }
+
+  // when the root is the node we want to look for
+  if (root -> data == data && root->left == NULL && root-> right ==NULL){
+    root -> data =0;
+    free (root);
+    root =NULL;
+    return 1;
+  }
+
+
   else{
     // find the first node whose data equals to data
+    // node d is what we want to delete
     nodeD = SearchNode(root, data);
     if (nodeD == NULL){
       printf("Error, we cannot find data %lu \n", data);
       return 0;
     }
 
-    // find left largest of nodeD
+    // find left largest of nodeD or right smallest
+    // nodeD is a leave
+    if (nodeD -> left == NULL && nodeD -> right == NULL ){
+      nodeD -> data =0;
+      Node * node =SearchNodeParent(root, data);
+
+      if (node -> data > nodeD -> data) {
+        node -> left =NULL;
+      }else {
+        node -> right = NULL;
+      }
+      nodeD = NULL;
+      free(nodeD);
+      nodeD = NULL;
+      return 1;
+    }
+
+    // nodeD has left sub tree or has both left and right sub tree
+    if (nodeD -> left != NULL && nodeD -> right == NULL ){
+      nodeAlter= GetRightestNode(nodeD);
+      nodeAlter_Parent = GetRightestNodeParent (nodeD);
+      nodeD -> data = nodeAlter-> data;
+      nodeAlter_Parent -> right = NULL;
+
+      free(nodeD);
+      free(nodeAlter);
+      free(nodeAlter_Parent);
+      nodeD= NULL;
+      nodeAlter = NULL;
+      nodeAlter_Parent = NULL;
 
 
 
+      return 1;
 
+    }
 
+    // nodeD does not have left sub tree but has sub tree at right
+    if (nodeD -> right != NULL ){
+      nodeAlter= GetLeftestNode(nodeD);
+      nodeAlter_Parent = GetLeftestNodeParent (nodeD);
+      nodeD -> data = nodeAlter-> data;
+      nodeAlter_Parent -> left = NULL;
+
+      free(nodeD);
+      free(nodeAlter);
+      free(nodeAlter_Parent);
+      nodeD= NULL;
+      nodeAlter = NULL;
+      nodeAlter_Parent = NULL;
+      return 1;
+    }
   }
 
   return 0;
@@ -322,46 +461,30 @@ int main(){
   printf("tree height: %lu \n", h);
 
 // test to find a node
-  printf("looking for %lu and it exsists \n", SearchNode(myBST -> root, 7)-> data);
-
-// finding smallest and largest data
-  unsigned long Smallest = GetSmallest(myBST-> root);
-  printf("left most %lu \n", Smallest);
-
-  unsigned long Largest = GetLargest(myBST-> root);
-  printf("right most %lu \n", Largest);
-
-// finding smallest largest node
-  Node * node = (Node *) malloc(sizeof(Node));
-  Node * root = myBST -> root;
-  if (root == NULL){
-    printf("cannot search, root is null");
-    node=  NULL;
-  }else if (root -> left ==NULL){
-    printf("the root is smallest");
-    node= NULL;
-    printf("smalles data %lu", root ->data);
-  }else if(root->left->left ==NULL){
-    node = root;
-    printf("smalles data %lu", node->left ->data);
-  }
-  else
-  {
-    node =GetSmallestNodeParentRecursively(root);
-    printf("smalles data %lu \n", node -> left->data);
+  Node * node =SearchNode(myBST -> root, 17);
+  if (node!=NULL){
+    printf("looking for %lu and it exsists \n", node-> data);
   }
 
+// finding Leftest and Rightest data, they are using the same way to find the node
+  unsigned long Leftest = GetSmallest(myBST-> root);
+  printf("left most %lu \n", Leftest);
+
+  unsigned long Rightest = GetLargest(myBST-> root);
+  printf("right most %lu \n", Rightest);
 
 
+// delete 9
+  printf("deleting a node \n");
 
-
-
-
+  deleteNode(myBST -> root, 9);
+// and print tree again to see result
+  TraversalInOrder(myBST -> root);
 
   //empty tree
   EmptyTree(myBST);
   // testing after empty the tree
-  printf("after empty the data on root is %lu \n", myBST->root -> data);
+  printf("\nafter empty the data on root is %lu \n", myBST->root -> data);
 
   // Delete tree
   printf("after deleting the tree: \n");

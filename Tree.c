@@ -283,28 +283,22 @@ unsigned long GetLargest(Node *root){
   return rv;
 }
 
-/* Given a binary search tree and a data, this function deletes the data
-   and returns the new root */
-Node* deleteNode(Node* root, int data)
+
+Node* DeleteNode(Node* root, int data)
 {
-    // base case
+
     if (root == NULL) return root;
 
-    // If the data to be deleted is smaller than the root's data,
-    // then it lies in left subtree
+
     if (data < root->data)
-        root->left = deleteNode(root->left, data);
+        root->left = DeleteNode(root->left, data);
 
-    // If the data to be deleted is greater than the root's data,
-    // then it lies in right subtree
+
     else if (data > root->data)
-        root->right = deleteNode(root->right, data);
+        root->right = DeleteNode(root->right, data);
 
-    // if data is same as root's data, then This is the node
-    // to be deleted
     else
     {
-        // node with only one child or no child
         if (root->left == NULL)
         {
             Node *temp = root->right;
@@ -318,112 +312,14 @@ Node* deleteNode(Node* root, int data)
             return temp;
         }
 
-        // node with two children: Get the inorder successor (smallest
-        // in the right subtree)
         Node* temp = GetLeftestNode(root->right);
 
-        // Copy the inorder successor's content to this node
         root->data = temp->data;
-
-        // Delete the inorder successor
-        root->right = deleteNode(root->right, temp->data);
+        root->right = DeleteNode(root->right, temp->data);
     }
     return root;
 }
 
-unsigned long Delete(Node *root, unsigned long data){
-  /*
-  * The idea to safely delete a node on a binary search tree
-  * Find the node, nodeD
-  * Find the Rightest node on left side of node
-  * If null node on left, find right Leftest node, it is nodeAlter
-  * Set data of this node is the data from nodeD we found on last step
-  * connect nodeD"s child to nodeD"s parent
-  */
-  Node * nodeD = (Node *) malloc(sizeof(Node));
-  Node * nodeAlter = (Node *) malloc(sizeof(Node));
-  Node * nodeAlter_Parent = (Node *) malloc(sizeof(Node));
-
-  if (root == NULL){
-    printf("Error, please do not give me an empty tree\n");
-    return 0;
-  }
-
-  // when the root is the node we want to look for
-  if (root -> data == data && root->left == NULL && root-> right ==NULL){
-    root -> data =0;
-    free (root);
-    root =NULL;
-    return 1;
-  }
-
-
-  else{
-    // find the first node whose data equals to data
-    // node d is what we want to delete
-    nodeD = SearchNode(root, data);
-    if (nodeD == NULL){
-      printf("Error, we cannot find data %lu \n", data);
-      return 0;
-    }
-
-    // find left largest of nodeD or right smallest
-    // nodeD is a leave
-    if (nodeD -> left == NULL && nodeD -> right == NULL ){
-      nodeD -> data =0;
-      Node * node =SearchNodeParent(root, data);
-
-      if (node -> data > nodeD -> data) {
-        node -> left =NULL;
-      }else {
-        node -> right = NULL;
-      }
-      nodeD = NULL;
-      free(nodeD);
-      nodeD = NULL;
-      return 1;
-    }
-
-    // nodeD has left sub tree or has both left and right sub tree
-    if (nodeD -> left != NULL && nodeD -> right == NULL ){
-      nodeAlter= GetRightestNode(nodeD);
-      nodeAlter_Parent = GetRightestNodeParent (nodeD);
-      nodeD -> data = nodeAlter-> data;
-      nodeAlter_Parent -> right = NULL;
-
-      free(nodeD);
-      free(nodeAlter);
-      free(nodeAlter_Parent);
-      nodeD= NULL;
-      nodeAlter = NULL;
-      nodeAlter_Parent = NULL;
-
-
-
-      return 1;
-
-    }
-
-    // nodeD does not have left sub tree but has sub tree at right
-    if (nodeD -> right != NULL ){
-      nodeAlter= GetLeftestNode(nodeD);
-      nodeAlter_Parent = GetLeftestNodeParent (nodeD);
-      nodeD -> data = nodeAlter-> data;
-      nodeAlter_Parent -> left = NULL;
-
-      free(nodeD);
-      free(nodeAlter);
-      free(nodeAlter_Parent);
-      nodeD= NULL;
-      nodeAlter = NULL;
-      nodeAlter_Parent = NULL;
-      return 1;
-    }
-  }
-
-  return 0;
-
-}
 
 
 
@@ -477,7 +373,8 @@ int main(){
 // delete 9
   printf("deleting a node \n");
 
-  deleteNode(myBST -> root, 9);
+  DeleteNode(myBST -> root, 9);
+  DeleteNode(myBST -> root, 999);
 // and print tree again to see result
   TraversalInOrder(myBST -> root);
 

@@ -320,12 +320,21 @@ Node* DeleteNode(Node* root, int data)
     return root;
 }
 
+void PopulateTree(BSTHead* myBST, int length){
+  for (int i=0; i<length; i++){
+    AddNode(myBST, (rand()%(10000+1-1)) +1);
+  }
+}
 
 
 
 int main(){
   BSTHead* myBST = CreateBST();
 
+// populate the tree automatically
+  PopulateTree(myBST, 10);
+
+// populate the tree manually
   AddNode(myBST, 17);
   AddNode(myBST, 20);
   AddNode(myBST, 11);
@@ -335,16 +344,18 @@ int main(){
   AddNode(myBST, 11);
   AddNode(myBST, 9);
 
+
+
   printf("show the tree: \n");
   TraversalInOrder(myBST -> root);
 
 // searching test
   printf("\nsearching 111 and 127: \n");
   unsigned long s = Search(myBST -> root, 127);
-  printf ("result of finding 11 %lu \n", s);
+  printf ("result of finding 11: (1 means exist) %lu \n", s);
 
   s = Search(myBST -> root, 127);
-  printf ("result of finding 127 %lu \n", s);
+  printf ("result of finding 127: (1 means exist) %lu \n", s);
 
 // counting test
   printf("count of tree: ");
@@ -371,9 +382,14 @@ int main(){
 
 
 // delete 9
-  printf("deleting a node \n");
+  printf("deleting a node 9 which exist \n");
 
   DeleteNode(myBST -> root, 9);
+// and print tree again to see result
+  TraversalInOrder(myBST -> root);
+
+// delete a node which does not exist
+  printf("deleting a node 999 which does not exist \n");
   DeleteNode(myBST -> root, 999);
 // and print tree again to see result
   TraversalInOrder(myBST -> root);

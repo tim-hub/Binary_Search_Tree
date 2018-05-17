@@ -165,10 +165,11 @@ signed long Search(Node * node, signed long data){
   }
 }
 
-void DeleteTreeFromRoot(Node *root){
+//delete all nodes expect header
+void EmptyAllNodes(Node *root){
   if (root!=NULL){
-    DeleteTreeFromRoot(root->left);
-    DeleteTreeFromRoot(root->right);
+    EmptyAllNodes(root->left);
+    EmptyAllNodes(root->right);
     free (root);
 
     if (root -> left != NULL){
@@ -183,23 +184,21 @@ void DeleteTreeFromRoot(Node *root){
 
   }
 }
-void DeleteTree(BSTHead *myBST){
-  DeleteTreeFromRoot(myBST->root);
+void EmptyTree(BSTHead *myBST){
+  EmptyAllNodes(myBST->root);
+  myBST -> root = NULL;
+  free (myBST -> root);
+  myBST -> root = NULL;
 
+}
+
+void DeleteTree(BSTHead *myBST){
+  EmptyTree(myBST);
   free(myBST);
   myBST = NULL;
 }
 
-void EmptyTreeFromRoot(Node *root){
-  if (root!=NULL){
-    EmptyTreeFromRoot(root->left);
-    EmptyTreeFromRoot(root->right);
-    root -> data =0;
-  }
-}
-void EmptyTree(BSTHead *myBST){
-  EmptyTreeFromRoot(myBST->root);
-}
+
 
 
 Node * GetLeftestNodeParentRecursively(Node *root){
@@ -288,7 +287,6 @@ Node* DeleteNode(Node* root, int data)
 {
 
     if (root == NULL) return root;
-
 
     if (data < root->data)
         root->left = DeleteNode(root->left, data);
@@ -395,17 +393,19 @@ int main(){
   TraversalInOrder(myBST -> root);
 
   //empty tree
+  printf("\n go to empty the tree \n");
   EmptyTree(myBST);
   // testing after empty the tree
   printf("\n empty the tree \n");
+
+
 
   // Delete tree
   printf("after deleting the tree: \n");
   DeleteTree(myBST);
   // testing after deleting the tree
   h=GetHeight(myBST -> root);
-  printf("tree height: %lu \n", h);
-  printf("after delete %lu \n", myBST -> root -> left -> data);
+  printf("return error after delete %lu \n", myBST -> root -> left -> data);
 
   // system("pause");
   return 0;
